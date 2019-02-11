@@ -1,0 +1,4 @@
+global space; space = {
+    'alpha': hp.uniform('alpha', 0.0, 1.0),
+    'l1_ratio': hp.uniform('l1_ratio', 0.0, 1.0)
+}

@@ -1,0 +1,171 @@
+global model_dict;
+model_dict = {
+    "MultinomialNB": {
+        "params": {
+            "alpha": [x/10 for x in range(10)],
+            "fit_prior": [True, False]
+        },
+        "search_method": "grid_search",
+        "search_params": {
+            "n_jobs": -1,
+            "scoring": "accuracy"
+        },
+        "task": "classification"
+    },
+    "LogisticRegression": {
+        "params": {
+            "penalty": ['l1', 'l2']
+        },
+        "search_method": "grid_search",
+        "search_params": {
+            "n_jobs": -1,
+            "scoring": "accuracy"
+        },
+        "task": "classification"
+    },
+    "XGBoost_regressor":{
+        "params" :{
+            'booster': ['gbtree', 'dart','gblinear'],
+            'max_depth': [x for x in range(1, 40)],
+            'reg_alpha': uniform(0.0, 1.0),
+            'reg_lambda': uniform(0.0, 1.0),
+            'colsample_bytree': uniform(0.5, 0.5)
+        },
+        "search_method": "random_search",
+        "search_params": {
+            "n_jobs": -1,
+            "scoring": "neg_mean_squared_error",
+            "n_iter": 100
+        },
+        "task": "regression"
+    },
+
+    "RandomForest_regressor":{
+        "params": {
+            'max_depth': hp.choice('max_depth', range(1,20)),
+            'max_features': hp.choice('max_features', range(1,5)),
+            'n_estimators': hp.choice('n_estimators', range(1,20)),
+            'criterion': hp.choice('criterion', ["mae", "mse"])
+        },
+        "search_method": "bayesian_search",
+        "search_params": {
+            "n_jobs": -1,
+            "scoring": "residual_mean_squared_error",
+            "n_iter": 1000
+        },
+        "task": "regression",
+        "plot_loss": True
+
+    },
+    "LassoRegression":{
+        "params": {
+            "alpha": [0.001, 0.01, 0.5, 0.8, 1, 0.005, 0.05, 0.08, 0.1, 3, 5, 10], 
+            "normalize": [True, False],
+            "fit_intercept": [True, False] 
+        },
+        "search_method": "grid_search",
+        "search_params": {
+            "n_jobs": -1,
+            "scoring": "neg_mean_squared_error"
+        },
+    },
+    "LinearRegression":{
+        "params": {
+            "normalize": [True, False],
+            "fit_intercept": [True, False] 
+        },
+        "search_method": "grid_search",
+        "search_params": {
+            "n_jobs": -1,
+            "scoring": "neg_mean_squared_error"
+        },
+    },
+    "NonNegativeLinearRegression":{
+        "params": {
+            "normalize": [True, False],
+            "fit_intercept": [True, False] 
+        },
+        "search_method": "grid_search",
+        "search_params": {
+            "n_jobs": -1,
+            "scoring": "neg_mean_squared_error"
+        },
+    },
+    "SVM_regressor":{
+        "params": {
+            "C": randint(1, 1000),
+            "kernel": ['rbf', 'linear'],
+            "gamma": uniform(0, 1)
+        },
+        "search_method": "random_search",
+        "search_params": {
+            "n_jobs": -1,
+            "scoring": "neg_mean_squared_error",
+	    "n_iter": 3000
+        },
+    },
+    "SGD_regressor":{
+        "params": {
+            "alpha": [0.1, 0.3, 0.5, 0.8, 1],
+            "fit_intercept": [True, False],
+            "learning_rate": ['invscaling']
+        },
+        "search_method": "grid_search",
+        "search_params": {
+            "n_jobs": -1,
+            "scoring": "neg_mean_squared_error"
+        },
+    },
+    "DT_regressor":{
+        "params": {
+            "max_depth": [2, 3, 4, 5],
+            "min_samples_split": [2, 4, 6],
+            "min_samples_leaf": [1, 4, 6, 8]
+        },
+        "search_method": "grid_search",
+        "search_params": {
+            "n_jobs": -1,
+            "scoring": "neg_mean_squared_error"
+        },
+    },
+    "LinearGAM":{
+        "params": {
+            "n_splines": randint(4, 1000),
+            "spline_order": [1,2,3]
+        },
+        "search_method": "random_search",
+        "search_params": {
+            "n_jobs": 3,
+            "scoring": "neg_mean_squared_error",
+            "n_iter": 500,
+            "verbose": 1
+        },
+    },
+    "MARS":{
+        "params": {
+            "max_degree": randint(1, 10),
+            'minspan_alpha': uniform(0, 1),
+            "smooth": [True, False]
+        },
+        "search_method": "random_search",
+        "search_params": {
+            "n_jobs": -1,
+            "scoring": "neg_mean_squared_error",
+            "n_iter": 500,
+            "verbose": 1
+        },
+    },
+    "KNN_regressor":{
+        "params": {
+            "n_neighbors": [2, 5, 10, 15, 20, 40, 50, 60, 70],
+            "metric": ["euclidean", "canberra", "cosine"],
+            "weights": ["uniform", "distance"]
+        },
+        "search_method": "grid_search",
+        "search_params": {
+            "n_jobs": -1,
+            "scoring": "neg_mean_squared_error"
+        },
+    }
+
+}

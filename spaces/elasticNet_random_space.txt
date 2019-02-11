@@ -1,0 +1,4 @@
+global space; space = {
+    'alpha': uniform(0.0, 1.0),
+    'l1_ratio': uniform(0.0, 1.0)
+}
