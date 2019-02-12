@@ -51,7 +51,6 @@ class Summarization():
             if model not in Summarization.models_list:
                 raise Exception("The '{}' model isn't available. Choose between {}"
                                 .format(model, Summarization.models_list))
-
     def getInfo_models():
         print(Summarization.models_list)
 

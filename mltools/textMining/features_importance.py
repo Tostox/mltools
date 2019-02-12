@@ -3,20 +3,6 @@ from nltk import FreqDist
 from ..plottingTool.mltools_plot import text_mining_plot
 import concurrent.futures
 
-def get_top_words(count_matrix, vectorizer, n=10):
-    #for each document we obtain the top words based on count matrix (tf or tf-idf)
-    top_words_list = []
-    for idx, doc in enumerate(count_matrix.toarray()):
-        top_words_list.append( [vectorizer.get_feature_names()[i]
-                                         for i in np.argsort(doc).flatten()[::-1]][:n])
-    return top_words_list
-
-def _map_doc_words(count_matrix, vectorizer, n=10):
-    for idx, doc in enumerate(count_matrix.toarray()):
-        top_words_list.append( " ".join([vectorizer.get_feature_names()[i]
-                                         for i in np.argsort(doc).flatten()[::-1]][:n]))
-        return top_words_list
-
 def get_most_important_features(vectorizer, model, n=5):
     index_to_word = {v: k for k, v in vectorizer.vocabulary_.items()}
 

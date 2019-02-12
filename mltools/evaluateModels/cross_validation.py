@@ -75,11 +75,13 @@ class CrossValidation():
             if score not in self.scores_dict.keys():
                 raise Exception("The score {} it's not avaible".format(score))
 
+    @property
     def get_models_info(self):
         ''' This function print the model's list '''
         for key in self.model_dict.keys():
             print(key)
 
+    @property
     def get_scores_info(self):
         ''' This function print the score's list'''
         for key in self.scores_dict.keys():
@@ -120,7 +122,7 @@ class CrossValidation():
             Exception("Impossible to set the parameters in {} model.".format(model))
         return model
 
-    def fit_cv(self, train_data, target_variable, folds_results=False,
+    def fit(self, train_data, target_variable, folds_results=False,
                k=10, seed=123, plot_iteration_results=False):
         """ This function fit the cross validation for the models read by the class during the initialization.
 
