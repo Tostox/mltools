@@ -21,8 +21,7 @@ pip install git+https://github.com/Tostox/mltools.git
 * Python >= 3.6
 * numpy >= 1.15.2
 * pandas >= 0.23.4
-* sklearn >= 0.19.1
-* sklearn-genetic >= 0.1
+* scikit-learn >= 0.19.1
 * scipy >= 1.1.0
 * hyperopt >= 0.1
 * missingno >= 0.4.1
