@@ -41,6 +41,24 @@ pip install git+https://github.com/Tostox/mltools.git
 * fbprophet >= 0.3.post2
 * googletrans >= 2.4.0
 
+**Note:** I suggest to install fbprophet before using pip to install mltools. 
+
+### Note
+
+If you want to use the RMSE score you have to change the specifics files into scikit-learn library. 
+
+
+```bash
+/anaconda/lib/python3.6/site-packages/sklearn/metrics/regression.py
+/anaconda/lib/python3.6/site-packages/sklearn/metrics/__init__.py
+
+
+C:\Users\{user-name}\AppData\Local\Continuum\anaconda3\Lib\site-packages\sklearn\metrics\regression.py
+C:\Users\{user-name}\AppData\Local\Continuum\anaconda3\Lib\site-packages\sklearn\metrics\__init__.py
+
+```
+Modify these files adding the "custom function" in folder sklearn_files.
+
 ## Acknowledgments
 
 A special thanks to Martina Trojani and Francesca Casini for the collaboration and to Manuel Calzolari (https://github.com/manuel-calzolari) that provided me the code for the genetic feature selection module.

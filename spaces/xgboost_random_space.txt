@@ -1,8 +1,0 @@
-global space; space = {
-	'booster': ['gbtree', 'dart','gblinear'],
-    'max_depth': [x for x in range(0, 40)],
-    'learning_rate': uniform(0.025, 0.25),
-    'reg_alpha': uniform(0.0, 1.0),
-    'reg_lambda': uniform(0.0, 1.0),
-    'colsample_bytree': uniform(0.5, 0.5)
-}

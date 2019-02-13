@@ -1,5 +1,0 @@
-global space; space = {
-    'C': uniform(0, 10.0),
-    'kernel': ['linear', 'rbf'],
-    'gamma': uniform(0, 20.0)
-}

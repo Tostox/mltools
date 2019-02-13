@@ -1,8 +1,0 @@
-global space; space = {
-    'booster': hp.choice('booster', ['gbtree', 'dart','gblinear']),
-    'max_depth': hp.choice('max_depth', np.arange(1, 40, dtype=int)),
-    'learning_rate': hp.loguniform('learning_rate', np.log(0.025), np.log(0.25)),
-    'reg_alpha': hp.uniform('reg_alpha', 0.0, 1.0),
-    'reg_lambda': hp.uniform('reg_lambda', 0.0, 1.0),
-    'colsample_bytree': hp.uniform('colsample_by_tree', 0.5, 1.0)
-}

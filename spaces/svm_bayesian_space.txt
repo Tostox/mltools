@@ -1,5 +1,0 @@
-global space; space = {
-    'C': hp.uniform('C', 0, 10.0),
-    'kernel': hp.choice('kernel', ['linear', 'rbf']),
-    'gamma': hp.uniform('gamma', 0, 20.0)
-}
