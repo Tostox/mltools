@@ -3,7 +3,7 @@ This repository include my personal custom python package for ML-Data Science ta
 
 ## Description 
 
-The package *mltools* is an high-level implementation of various packages and modules for Machine Learning and Data Mining. The idea behind this work is to create a python package that allow an easy and fast usage of the typical algorithms used by Data Scientist, in order to build pipelines that are very easy to deploy. *mltools* is a collection of custom methods and custom re-implementations of functions and tools that are coming from python packages like *sk-learn*, *scipy*, *nltk*, *gensim* etc.
+The package *mltools* is an high-level implementation of various packages and modules for Machine Learning and Data Mining. The idea behind this work is to create a python package that allows an easy and fast usage of the typical algorithms used by Data Scientist, in order to build pipelines that are very easy to deploy. *mltools* is a collection of custom methods and custom re-implementations of functions and tools that are coming from python packages like *sk-learn*, *scipy*, *nltk*, *gensim* etc.
 The package include different modules that are specific for a different fields of analysis. In version 1.0 we have four main modules:
 * evaluateModels: module for train and evaluate the main ML algorithms for classification and regression task; 
 * featureEngineering: module for data preprocessing and exploration step, include various methods for feature selection;
