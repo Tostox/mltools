@@ -141,7 +141,7 @@ class VectorizeData():
     def __init__(self, method='tf-idf'):
         self.method = method
 
-    def fit(self, train_data, test_data = None, skipper = 'word'):
+    def fit(self, train_data, test_data = None, skipper = 'word', max_features = 60000):
         """
         Args:
         -----
@@ -154,13 +154,13 @@ class VectorizeData():
         """
 
         if self.method == 'binary':
-            count_vectorizer = TfidfVectorizer(analyzer = skipper, binary=True, use_idf=False, norm=None, max_features=60000)
+            count_vectorizer = TfidfVectorizer(analyzer = skipper, binary=True, use_idf=False, norm=None, max_features=max_features)
         elif self.method == 'count':
             count_vectorizer = CountVectorizer(analyzer = skipper)
         elif self.method == 'tf':
-            count_vectorizer = TfidfVectorizer(analyzer = skipper, use_idf=False, max_features=60000)
+            count_vectorizer = TfidfVectorizer(analyzer = skipper, use_idf=False, max_features=max_features)
         elif self.method == 'tf-idf':
-            count_vectorizer = TfidfVectorizer(analyzer = skipper, max_features=60000)
+            count_vectorizer = TfidfVectorizer(analyzer = skipper, max_features=max_features)
         else:
             raise Exception("Invalid method. Use: binary, tf or tf-idf")
         
