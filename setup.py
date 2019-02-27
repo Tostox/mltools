@@ -23,7 +23,7 @@ def configuration(parent_package='', top_path=None):
 
 def setup_package():
       metadata = dict(name='mltools',
-                        version='0.1',
+                        version='0.1.1',
                         description='A custom collection of ML methods and utilities',
                         url='https://github.com/Tostox/mltools',
                         download_url = 'https://github.com/Tostox/mltools/#files',
