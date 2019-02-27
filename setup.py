@@ -15,4 +15,5 @@ setup(name='mltools',
                         'langdetect>=1.0.7', 'spacy>=2.0.11', 'statsmodels>=0.9.0',
                         'fbprophet>=0.3.post2', 'googletrans>=2.4.0'],
       packages=['mltools'],
+      include_package_data=True,
       zip_safe=False)
