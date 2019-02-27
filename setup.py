@@ -36,7 +36,7 @@ def setup_package():
                                           'gensim>=3.4.0', 'nltk>=3.4', 'sumy>=0.7.0', 'rouge>=0.3.1',
                                           'langdetect>=1.0.7', 'spacy>=2.0.11', 'statsmodels>=0.9.0',
                                           'fbprophet>=0.3.post2', 'googletrans>=2.4.0'],
-                        packages=['mltools'],
+                        packages=find_packages(),
                         include_package_data=True,
                         zip_safe=False)
 
