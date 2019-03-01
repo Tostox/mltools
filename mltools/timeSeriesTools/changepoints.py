@@ -3,7 +3,9 @@ from rpy2.robjects import pandas2ri
 import rpy2.robjects.numpy2ri
 import json
 import pandas as pd
+import numpy as np
 import time
+import math
 from ..plottingTool.mltools_plot import time_series_plot
 from bokeh.models.widgets import Panel, Tabs
 from bokeh.plotting import figure
@@ -11,9 +13,7 @@ from bokeh.io import show
 from bokeh.models.annotations import Span
 from bokeh import palettes
 
-
 pandas2ri.activate()
-
 rpy2.robjects.numpy2ri.activate()
 
 
@@ -67,14 +67,14 @@ class CPA():
     """
 
     # Available methods in the class.
-    methods_av = ['AMOC', 'BinSeg', 'SegNeigh', 'PELT', 'PROPHET', 'wbs', 'ecp', 'bcp']
+    methods_av = ['AMOC', 'BinSeg', 'SegNeigh', 'PELT', 'PROPHET', 'wbs', 'ecp', 'bcp', 'Bayesian']
 
     def __init__(self, method='PROPHET'):
 
         self.method = method
 
         if method not in CPA.methods_av:
-            raise Exception("Method '{}' is not available. Choose between {}".format(method, methods_av))
+            raise Exception("Method '{}' is not available. Choose between {}".format(method, CPA.methods_av))
 
     def get_libraries():
         """ This function checks if all the necessary packages are installed in R and, in this case, loads them.
@@ -89,7 +89,7 @@ class CPA():
             try:
                 r('library({})'.format(name))
                 print("The package '{}' is already installed.".format(name))
-            except:
+            except Exception:
                 uninstalled_packages.append(name)
 
         print("\nMissing Packages: ", uninstalled_packages)
@@ -105,7 +105,7 @@ class CPA():
                             library({})
                             """.format(package, package))
                         print("The package '{}' has been successfully installed!".format(package))
-                    except:
+                    except Exception:
                         print("The package '{}' doesn't exist...".format(package))
             else:
                 print("The installation has been interrupted...")
@@ -129,6 +129,15 @@ class CPA():
         """
         values = data  # <-- E' inutile
         date = data.index
+
+        if self.method == 'Bayesian':
+            cp_dates = self.cpDetector(values)[0]
+            d = pd.Series()
+            for n, date in enumerate(date):
+                if date in cp_dates:
+                    d[date] = n
+
+            return {self.method: d.values.tolist()}
 
         if compute_mean:
             d = self._mean(values, date, format_dt, model_param)
@@ -285,9 +294,9 @@ class CPA():
 
 
         #---------------changepoint library........................................
-           
+
           changepoint.models = c('PELT','AMOC','BinSeg','SegNeigh')
-          
+
           if(method %in% changepoint.models){
              library(changepoint)
 
@@ -304,14 +313,14 @@ class CPA():
             m = prophet(df_new, n.changepoints = n.checkpoints, changepoint.prior.scale = changepoint.prior.scale, growth = growth)
 
             cpt.loc = as.Date(m$changepoints, format_dt)      #checkpoint's location have to be index not date,so it will be converted
-            date = as.Date(df_new$ds)                             
-            loc_cpt = rep_len(1, length(cpt.loc))           
+            date = as.Date(df_new$ds)
+            loc_cpt = rep_len(1, length(cpt.loc))
             i=1
             for(loc in cpt.loc){
               loc_cpt[i] = which(date==loc)
               i=i+1
             }
-                      
+
             h[[method]] = loc_cpt
 
           } else if (method == 'wbs'){
@@ -321,7 +330,7 @@ class CPA():
             w.cpt = changepoints(w, Kmax = n.checkpoints, penalty = penalty_wbs, th.const = th.const)
             loc_w = w.cpt$cpt.ic[[penalty_wbs]]
             loc_cpt = sort(loc_w)
-          
+
             h[[method]] = loc_cpt
 
           } else if (method == 'ecp'){
@@ -329,7 +338,7 @@ class CPA():
 
             e = e.divisive(df_new, k = n.checkpoints, sig.lvl = sig.lvl ,R = R, alpha = alpha, min.size = min.size)
             loc_cpt = e$estimates[2:(length(e$estimates)-1)]
-          
+
             h[[method]] = loc_cpt
 
           } else if (method=='bcp'){
@@ -347,12 +356,8 @@ class CPA():
         exportJson = toJSON(h)                                   # json creation
 
         """
-        )
+                      )
 
-        # R'json on python is a array, so it will be convert firstly to string and after to dictionary
-#        s = file_json[0].replace('\n', '').replace('   ', '')
-#        json_acceptable_string = s.replace("'", "\"")
-#        d = json.loads(json_acceptable_string)
         d = json.loads(file_json[0])
 
         return d
@@ -436,6 +441,100 @@ class CPA():
         d = json.loads(json_acceptable_string)
 
         return d
+
+
+    def _step4(self, d):
+
+        n = len(d)
+        # dbar = sum(d)/float(n)
+        dbar = np.mean(d)
+
+        # dsbar = sum (d*d)/float(n)
+        dsbar = np.mean(np.multiply(d, d))
+
+        fac = dsbar - np.square(dbar)
+
+        summ = 0
+        summup = []
+
+        for z in range(n):
+            summ += d[z]
+            summup.append(summ)
+
+        y = []
+
+        for m in range(n - 1):
+            pos = m + 1
+            mscale = 4 * (pos) * (n - pos)
+            Q = summup[m] - (summ - summup[m])
+            U = -np.square(dbar * (n - 2 * pos) + Q) / float(mscale) + fac
+            y.append(-(n / float(2) - 1) * math.log(n * U / 2) - 0.5 * math.log((pos * (n - pos))))
+
+        z, zz = np.max(y), np.argmax(y)
+
+        mean1 = sum(d[:zz + 1]) / float(len(d[:zz + 1]))
+        mean2 = sum(d[(zz + 1):n]) / float(n - 1 - zz)
+
+        return y, zz, mean1, mean2
+
+
+    def cpDetector(self, data):
+
+        loglike_list = []
+        res = self._step4(data)
+        like = pd.DataFrame(res[0])
+        like.index = data[1:].index
+        cp1 = like[like.values == np.max(like.values)].index
+        loglike = like[like.values == np.max(like.values)].values
+        loglike_list.append(loglike)
+        subset1 = data[data.index.values < cp1.values]
+        subset2 = data[data.index.values > cp1.values]
+        cp_list = [like[like.values == like.iloc[0].values].index, like[like.values == like.iloc[-1].values].index]
+        cp_list.append(cp1)
+        cp_list.sort()
+        flag = True
+        i = 1
+
+        while flag:
+
+            if (i == (len(cp_list) - 1)):
+                break
+
+            subset1 = data[(data.index.values < cp_list[i].values) & (data.index.values > cp_list[i - 1].values)]
+            subset2 = data[(data.index.values > cp_list[i].values) & (data.index.values < cp_list[i + 1].values)]
+
+            if (subset1.shape[0] > 1):
+                res1 = self._step4(subset1)
+                like = pd.DataFrame(res1[0])
+                like.index = subset1[1:].index
+                cp = like[like.values == np.max(like.values)].index
+                loglike = like[like.values == np.max(like.values)].values
+                if (loglike < -100):
+                    cp_list.append(cp)
+                    loglike_list.append(loglike)
+
+            if (subset2.shape[0] > 1):
+                res2 = self._step4(subset2)
+                like = pd.DataFrame(res2[0])
+                like.index = subset2[1:].index
+                cp = like[like.values == np.max(like.values)].index
+                loglike = like[like.values == np.max(like.values)].values
+                if (loglike < -100):
+                    cp_list.append(cp)
+                    loglike_list.append(loglike)
+
+            cp_list.sort()
+            i = i + 1
+
+        for i in range(0, (len(cp_list) - 1)):
+            if(i >= (len(cp_list) - 1)):
+                break
+            diff = cp_list[i + 1] - cp_list[i]
+
+            if ((diff.seconds / 3600).astype(int) < 12) & ((diff.days).astype(int) < 1):
+                del cp_list[i + 1]
+
+        return cp_list, loglike_list
 
     @staticmethod
     def plot_changepoints(data, cp_list, colors=None):
