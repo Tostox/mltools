@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import scipy
-from sklearn.model_selection import cross_validate, GridSearchCV, RandomizedSearchCV, KFold
+from sklearn.model_selection import cross_validate, GridSearchCV, RandomizedSearchCV, KFold, StratifiedKFold
 from sklearn.metrics import make_scorer
 from scipy.stats import *
 from hyperopt import hp
@@ -43,7 +43,7 @@ class CrossValidation():
         params_file           >>> Optional. File which contains the list of parameters to test for each model.
     """
 
-    def __init__(self, models, scores, params_file=None):
+    def __init__(self, models, scores, stratified = True, params_file=None):
         if type(models) == list:
             self.models = models
         else:
@@ -53,6 +53,8 @@ class CrossValidation():
             self.scores = scores
         else:
             self.scores = [scores]
+        
+        self.stratified = stratified
 
         # dictionaries of models and scores used to import them
         self.model_dict = create_model_dict()
@@ -143,7 +145,10 @@ class CrossValidation():
         """
         results_dict = {}
         models_dict = {}
-        kf = KFold(k, shuffle=True, random_state=seed).get_n_splits(train_data)
+        if self.stratified:
+            kf = StratifiedKFold(k, shuffle=True, random_state=seed).get_n_splits(train_data)
+        else:
+            kf = KFold(k, shuffle=True, random_state=seed).get_n_splits(train_data)
         for model in self.models:
             print('Model: %s' % model)
             clf = self.create_model(model)
